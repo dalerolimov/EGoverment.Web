@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "E-Government.Web", "E-Government.Web\E-Government.Web.csproj", "{77B40688-2F84-486F-B733-3026A06A7FED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectronicGovernment.DTO", "..\ElectronicGovernment\ElectronicGovernment.DTO\ElectronicGovernment.DTO.csproj", "{6B8B8A57-D880-4DF2-B3F2-4A22E387F9CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{77B40688-2F84-486F-B733-3026A06A7FED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77B40688-2F84-486F-B733-3026A06A7FED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77B40688-2F84-486F-B733-3026A06A7FED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B8B8A57-D880-4DF2-B3F2-4A22E387F9CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B8B8A57-D880-4DF2-B3F2-4A22E387F9CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B8B8A57-D880-4DF2-B3F2-4A22E387F9CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B8B8A57-D880-4DF2-B3F2-4A22E387F9CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

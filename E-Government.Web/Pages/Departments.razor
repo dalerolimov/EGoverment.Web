@@ -1,46 +1,43 @@
 ﻿@page "/departments"
+@using System.Text.Json
+@using E_Government.Web.Components
 @using EGovernment.Web.Abstractions
+@using ElectronicGovernment.DTO
 @inject INavigationService NavigationService
+@inject HttpClient HttpClient
+@inject IDialogService DialogService;
 
 <MudContainer>
-    <MudText Typo="Typo.h5">Отделы</MudText>
-    <MudPaper Class="d-flex justify-content-between">
-        <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
-            <ButtonTemplate>
-                <MudFab HtmlTag="label"
-                        Color="Color.Secondary"
-                        Icon="@Icons.Material.Filled.CloudUpload"
-                        Label="Добавить отдел"
-                        for="@context.Id" />
-            </ButtonTemplate>
-        </MudFileUpload>
-        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+    <MudStack Row="true" Class="mb-3">
+        <MudText Typo="Typo.h5">Отделы</MudText>
+        <MudButton OnClick="ShowCreateModal" StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Class="rounded-pill" Style="background-color: #FFB27D; color: white">
+            Добавить отдел
+        </MudButton>
+    </MudStack>
+    <MudPaper Class="d-flex justify-content-between mb-3 ">
+        <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Class="ml-3"></MudTextField>
     </MudPaper>
 
-    <MudTable @ref="_table" T="Template" Items="@Elements" MultiSelection="true" @bind-SelectedItems="selectedItems" Hover="true"
+    <MudTable @ref="_table" T="DepartmentInfo" Items="@Elements" MultiSelection="true" @bind-SelectedItems="selectedItems" Hover="true"
               OnRowClick="@OnRowClick" @bind-SelectOnRowClick="@_selectOnRowClick">
         <HeaderContent>
             <MudTh>Id</MudTh>
             <MudTh>Название</MudTh>
-            <MudTh>Заведующий отделом</MudTh>
-            <MudTh>Количество сотрудников</MudTh>
-            <MudTh>Телефон</MudTh>
+            <MudTh>Описание</MudTh>
             <MudTh></MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Id">@context.Id</MudTd>
             <MudTd DataLabel="Name">@context.Name</MudTd>
-            <MudTd DataLabel="Name">@context.LeadOfDepartment</MudTd>
-            <MudTd DataLabel="Name">@context.EmployeeCount</MudTd>
-            <MudTd DataLabel="Name">@context.PhoneNumber</MudTd>
+            <MudTd DataLabel="Name">@context.Description</MudTd>
             <MudTd DataLabel="Actions">
                 <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="NavigateToDepartment" aria-label="edit" Color="Color.Info"></MudIconButton>
                 <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" aria-label="delete"></MudIconButton>
             </MudTd>
         </RowTemplate>
         <PagerContent>
-            <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+            <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }"/>
         </PagerContent>
     </MudTable>
 
@@ -50,40 +47,41 @@
 
 @code {
     private int gg = 10;
-    private MudTable<Template> table;
     private string searchString = null;
-    IList<IBrowserFile> files = new List<IBrowserFile>();
-    private void UploadFiles(IBrowserFile file)
-    {
-        files.Add(file);
-        //TODO upload the files to the server
-    }
 
-    private HashSet<Template> selectedItems = new();
-    private IEnumerable<Template> Elements = new List<Template>
+    protected override async Task OnInitializedAsync()
     {
-        new Template {Id = 1, Name = "Отдел кадров", LeadOfDepartment = "Алиев А.А", EmployeeCount = 4, PhoneNumber = "92- 820-15-12"},
-        new Template {Id = 1, Name = "Отдел кадров", LeadOfDepartment = "Алиев А.А", EmployeeCount = 4, PhoneNumber = "92- 820-15-12"},
-        new Template {Id = 1, Name = "Отдел кадров", LeadOfDepartment = "Алиев А.А", EmployeeCount = 4, PhoneNumber = "92- 820-15-12"},
-        new Template {Id = 1, Name = "Отдел кадров", LeadOfDepartment = "Алиев А.А", EmployeeCount = 4, PhoneNumber = "92- 820-15-12"},
-        new Template {Id = 1, Name = "Отдел кадров", LeadOfDepartment = "Алиев А.А", EmployeeCount = 4, PhoneNumber = "92- 820-15-12"},
-        new Template {Id = 1, Name = "Отдел кадров", LeadOfDepartment = "Алиев А.А", EmployeeCount = 4, PhoneNumber = "92- 820-15-12"},
-        new Template {Id = 1, Name = "Отдел кадров", LeadOfDepartment = "Алиев А.А", EmployeeCount = 4, PhoneNumber = "92- 820-15-12"},
-        new Template {Id = 1, Name = "Отдел кадров", LeadOfDepartment = "Алиев А.А", EmployeeCount = 4, PhoneNumber = "92- 820-15-12"},
-    };
+        var httpResponseMessage = await HttpClient.GetAsync("/Department/All");
+        var stream = await httpResponseMessage.Content.ReadAsStreamAsync();
+        var info = await JsonSerializer.DeserializeAsync<List<DepartmentInfo>>(stream);
+        // var responseMessage = await HttpClient.GetAsync("/Employee/All");
+        // var readAsStreamAsync = await responseMessage.Content.ReadAsStreamAsync();
+        // var deserializeAsync = await JsonSerializer.DeserializeAsync<List<EmployeeInfo>>(readAsStreamAsync);
+        // Employees = deserializeAsync;
+        Elements = info;
+    }
+    
+    private async void ShowCreateModal()
+    {
+        var modal = await DialogService.ShowAsync<CreateDepartmentComponent>("Create Department");
+        var modalResult = await modal.Result;
+        if (modalResult.Canceled) return;
+    }
+    private HashSet<DepartmentInfo> selectedItems = new();
+    private IEnumerable<DepartmentInfo> Elements = new List<DepartmentInfo>();
+    private IEnumerable<EmployeeInfo> Employees = new List<EmployeeInfo>();
     private bool _selectOnRowClick = true;
-    private MudTable<Template> _table;
+    private MudTable<DepartmentInfo> _table;
     private string _selectedItemText = "No row clicked";
 
 
-    void OnRowClick(TableRowClickEventArgs<Template> args)
+    void OnRowClick(TableRowClickEventArgs<DepartmentInfo> args)
     {
         _selectedItemText = $"{args} ({args})";
     }
     private void OnSearch(string text)
     {
         searchString = text;
-        table.ReloadServerData();
     }
 
     void NavigateToDepartment()
@@ -91,12 +89,4 @@
         NavigationService.NavigateTo("/department");
     }
 
-    class Template
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string LeadOfDepartment { get; set; }
-        public int EmployeeCount { get; set; }
-        public string PhoneNumber { get; set; }
-    }
 }
