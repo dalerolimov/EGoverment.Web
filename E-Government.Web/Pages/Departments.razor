@@ -51,14 +51,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var httpResponseMessage = await HttpClient.GetAsync("/Department/All");
-        var stream = await httpResponseMessage.Content.ReadAsStreamAsync();
-        var info = await JsonSerializer.DeserializeAsync<List<DepartmentInfo>>(stream);
-        // var responseMessage = await HttpClient.GetAsync("/Employee/All");
-        // var readAsStreamAsync = await responseMessage.Content.ReadAsStreamAsync();
-        // var deserializeAsync = await JsonSerializer.DeserializeAsync<List<EmployeeInfo>>(readAsStreamAsync);
-        // Employees = deserializeAsync;
-        Elements = info;
+        var departments = await HttpClient.GetFromJsonAsync<List<DepartmentInfo>>("/Department/All");
+        Elements = departments;
     }
     
     private async void ShowCreateModal()

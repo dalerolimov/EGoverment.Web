@@ -9,9 +9,6 @@
 <MudContainer>
     <MudStack Row="true" Class="mb-3">
         <MudText Typo="Typo.h5">Организации</MudText>
-        <MudButton OnClick="ShowCreateModal" StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Class="rounded-pill" Style="background-color: #FFB27D; color: white">
-            Добавить организацию
-        </MudButton>
     </MudStack>
     <MudPaper Class="d-flex justify-content-between mb-3">
         <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
