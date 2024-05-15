@@ -1,0 +1,87 @@
+﻿@page "/docs"
+
+<MudContainer>
+	<MudText Typo="Typo.h5">Документы</MudText>
+	<MudPaper Class="d-flex justify-content-between">
+		<MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
+			<ButtonTemplate>
+				<MudFab HtmlTag="label"
+						Color="Color.Secondary"
+						Icon="@Icons.Material.Filled.CloudUpload"
+						Label="Добавить документ"
+						for="@context.Id" />
+			</ButtonTemplate>
+		</MudFileUpload>
+		<MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+					  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Class="ml-3"></MudTextField>
+	</MudPaper>
+
+	<MudTable @ref="_table" T="Doc" Items="@Elements" MultiSelection="true" @bind-SelectedItems="selectedItems" Hover="true"
+			  OnRowClick="@OnRowClick" @bind-SelectOnRowClick="@_selectOnRowClick">
+		<HeaderContent>
+			<MudTh>Название</MudTh>
+			<MudTh>Получатель</MudTh>
+			<MudTh>Дата создание</MudTh>
+			<MudTh>Статус</MudTh>
+			<MudTh>Изменено</MudTh>
+		</HeaderContent>
+		<RowTemplate>
+			<MudTd DataLabel="Nr">@context.Name</MudTd>
+			<MudTd DataLabel="Sign">@context.Reciever</MudTd>
+			<MudTd DataLabel="Name">@context.CreatedAt</MudTd>
+			<MudTd DataLabel="Position">@context.Status</MudTd>
+			<MudTd DataLabel="Molar mass">@context.ChangedAt</MudTd>
+		</RowTemplate>
+		<PagerContent>
+			<MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+		</PagerContent>
+	</MudTable>
+
+
+
+</MudContainer>
+
+@code {
+	private int gg = 10;
+	private MudTable<Doc> table;
+	private string searchString = null;
+	IList<IBrowserFile> files = new List<IBrowserFile>();
+	private void UploadFiles(IBrowserFile file)
+	{
+		files.Add(file);
+		//TODO upload the files to the server
+	}
+
+	private HashSet<Doc> selectedItems = new();
+	private IEnumerable<Doc> Elements = new List<Doc>
+	{
+		new Doc {Name = "asd1", Reciever = "asdf"},
+		new Doc {Name = "asd2", Reciever = "asdf"},
+		new Doc {Name = "asd3", Reciever = "asdf"},
+		new Doc {Name = "asd4", Reciever = "asdf"},
+	};
+	private bool _selectOnRowClick = true;
+	private MudTable<Doc> _table;
+	private string _selectedItemText = "No row clicked";
+
+
+	void OnRowClick(TableRowClickEventArgs<Doc> args)
+	{
+		_selectedItemText = $"{args} ({args})";
+	}
+	private void OnSearch(string text)
+	{
+		searchString = text;
+		table.ReloadServerData();
+	}
+
+	class Doc
+	{
+		public string Name { get; set; }
+		public string Reciever { get; set; }
+		public DateTime CreatedAt { get; set; } = DateTime.Now;
+		public DateTime ChangedAt { get; set; } = DateTime.Now;
+		public string Status { get; set; } = "Created";
+	}
+}
+
